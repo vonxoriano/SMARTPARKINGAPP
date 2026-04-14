@@ -1,0 +1,333 @@
+/* ===================== THEME VARIABLES ===================== */
+:root {
+  --maroon: #800000;
+  --maroon-dark: #5a0000;
+
+  --yellow: #f5c400;
+  --yellow-soft: rgba(245, 196, 0, 0.2);
+
+  --white: #ffffff;
+
+  --gray-100: #f5f5f5;
+  --gray-200: #e0e0e0;
+  --gray-300: #c0c0c0;
+  --gray-500: #808080;
+  --gray-700: #4a4a4a;
+  --gray-900: #1f1f1f;
+
+  --bg: var(--gray-100);
+}
+
+/* ===================== RESET & BASE ===================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--bg);
+  color: var(--gray-900);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* ===================== LAYOUT ===================== */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg);
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px;
+  overflow: auto;
+}
+
+/* ===================== SIDEBAR ===================== */
+.sidebar {
+  width: 224px;
+  background-color: var(--maroon);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  padding: 16px;
+  border-bottom: 1px solid var(--maroon-dark);
+}
+
+.sidebar-logo-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-logo-icon {
+  width: 40px;
+  height: 40px;
+  background-color: var(--maroon-dark);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+}
+
+.sidebar-logo-title {
+  color: var(--white);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.sidebar-logo-subtitle {
+  color: var(--gray-200);
+  font-size: 11px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gray-200);
+  transition: background 0.2s, color 0.2s;
+}
+
+.nav-link:hover {
+  background-color: var(--maroon-dark);
+  color: var(--white);
+}
+
+.nav-link.active {
+  background-color: var(--yellow);
+  color: var(--maroon);
+}
+
+.sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid var(--maroon-dark);
+}
+
+.sidebar-user {
+  background-color: var(--maroon-dark);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-avatar,
+.user-avatar-lg {
+  background-color: var(--yellow);
+  color: var(--maroon);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-avatar { width: 32px; height: 32px; }
+.user-avatar-lg { width: 64px; height: 64px; }
+
+.user-name {
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.user-id {
+  color: var(--gray-200);
+  font-size: 10px;
+}
+
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 9px;
+  color: var(--gray-200);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.btn-logout:hover {
+  background-color: rgba(245, 196, 0, 0.2);
+  color: var(--yellow);
+}
+
+/* ===================== CARDS ===================== */
+.card {
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--gray-200);
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--maroon);
+  margin-bottom: 4px;
+}
+
+.card-subtitle {
+  color: var(--gray-500);
+  font-size: 14px;
+}
+
+.section-title {
+  color: var(--maroon);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* ===================== BADGES ===================== */
+.badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.badge-green {
+  background-color: var(--yellow-soft);
+  color: var(--maroon);
+}
+
+.badge-red {
+  background-color: rgba(128, 0, 0, 0.15);
+  color: var(--maroon);
+}
+
+/* ===================== INNER CARDS ===================== */
+.inner-card {
+  background-color: var(--gray-100);
+  border-radius: 9px;
+  padding: 12px;
+}
+
+/* ===================== ACTION BUTTONS ===================== */
+.btn-action {
+  padding: 16px;
+  border-radius: 9px;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.btn-action:hover {
+  filter: brightness(0.95);
+}
+
+.btn-action.purple { background-color: var(--maroon); }
+.btn-action.gold { background-color: var(--yellow); color: var(--maroon); }
+.btn-action.yellow { background-color: var(--yellow-soft); color: var(--maroon); }
+
+/* ===================== PROGRESS ===================== */
+.progress-wrap,
+.progress-sm-wrap {
+  background-color: var(--gray-200);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-wrap { height: 8px; }
+.progress-sm-wrap { height: 6px; }
+
+.progress-bar,
+.progress-sm-bar {
+  height: 100%;
+  background-color: var(--yellow);
+}
+
+/* ===================== AUTH ===================== */
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--white), var(--gray-100), var(--gray-200));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.auth-card {
+  background-color: var(--white);
+  border-radius: 18px;
+  padding: 32px;
+  border: 1px solid var(--gray-200);
+}
+
+.auth-app-title {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--maroon);
+}
+
+/* ===================== BUTTONS ===================== */
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--maroon);
+  border: none;
+  border-radius: 18px;
+  color: var(--white);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.btn-submit:hover {
+  background-color: var(--maroon-dark);
+}
+
+/* ===================== SPOT / MAP ===================== */
+.spot-cell.vacant {
+  background-color: rgba(245, 196, 0, 0.2);
+}
+
+.spot-cell.taken {
+  background-color: rgba(128, 0, 0, 0.25);
+}
+
+.spot-cell.reserved {
+  background-color: rgba(128, 0, 0, 0.1);
+}
+
+/* ===================== LEGEND ===================== */
+.dot-vacant { background-color: var(--yellow); }
+.dot-taken { background-color: var(--maroon); }
+.dot-reserved { background-color: var(--gray-500); }
