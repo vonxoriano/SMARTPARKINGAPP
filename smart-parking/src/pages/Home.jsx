@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import SidebarLayout from '../components/SidebarLayout';
 import { MapPin, Calendar, Car, Bike } from 'lucide-react';
-
+import logo from '../assets/logo.png';
 const areas = [
   { name: 'RTL Area', status: 'unavailable', moto: '0/50', car: '0/50' },
   { name: 'Open Area', status: 'available', moto: '10/50', car: '0/50' },
@@ -12,74 +11,81 @@ export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <SidebarLayout>
-      <div className="page-space">
-        <div className="card">
-          <h1 className="card-title">Welcome Back!</h1>
-          <p className="card-subtitle">Here's what's happening with your parking today.</p>
+    <div>
+      {/* HEADER */}
+      <div className="header-banner">
+       <img src={logo} alt="logo" />
+        <h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1>
+      </div>
+
+      {/* NAVIGATION */}
+      <div className="nav-tabs">
+        <button className="active">HOME</button>
+        <button onClick={() => navigate('/dashboard')}>DASHBOARD</button>
+        <button onClick={() => navigate('/parking-map')}>PARKING MAP</button>
+        <button onClick={() => navigate('/notifications')}>NOTIFICATIONS</button>
+        <button onClick={() => navigate('/settings')}>SETTINGS</button>
+      </div>
+
+      {/* AVAILABLE SPOTS */}
+      <div className="glass-card">
+        <h2>Available Spots</h2>
+
+        <div className="spots-number">
+          20<span>/300</span>
         </div>
 
-        <div className="spots-hero">
-          <div className="spots-hero-inner">
-            <div>
-              <div className="spots-label">Available Spots</div>
-              <div className="spots-number">20<span className="spots-total">/300</span></div>
-            </div>
-            <div className="spots-icon-box">
-              <Car size={32} />
-            </div>
-          </div>
-          <div className="progress-wrap">
-            <div className="progress-bar" style={{ width: '6.67%' }}></div>
-          </div>
-        </div>
-
-        <div className="action-grid-3">
-          <button className="btn-action purple btn-action-col" onClick={() => navigate('/dashboard')}>
-            <MapPin size={20} />
-            <span>Reserve Spot</span>
-          </button>
-          <button className="btn-action gold btn-action-col" onClick={() => navigate('/parking-map')}>
-            <MapPin size={20} />
-            <span>View Map</span>
-          </button>
-          <button className="btn-action yellow btn-action-col" onClick={() => navigate('/reservations')}>
-            <Calendar size={20} />
-            <span>My Reservations</span>
-          </button>
-        </div>
-
-        <div>
-          <h2 style={{ color: '#1E1E2E', fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Parking Areas</h2>
-          <div className="area-list">
-            {areas.map((area) => (
-              <div key={area.name} className="area-card">
-                <div className="area-header">
-                  <span className="area-title">{area.name}</span>
-                  <span className={`badge ${area.status === 'available' ? 'badge-green' : 'badge-red'}`}>
-                    {area.status === 'available' ? 'Available' : 'Unavailable'}
-                  </span>
-                </div>
-                <div className="spot-row">
-                  <div className="spot-item">
-                    <div className="spot-left"><Bike size={12} /><span>Motorcycle</span></div>
-                    <span className="spot-count">{area.moto}</span>
-                  </div>
-                  <div className="spot-item">
-                    <div className="spot-left"><Car size={12} /><span>Car</span></div>
-                    <span className="spot-count">{area.car}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="announcement">
-          <h2>Announcements</h2>
-          <p>RTL area currently unavailable</p>
+        <div className="progress-wrap">
+          <div className="progress-bar"></div>
         </div>
       </div>
-    </SidebarLayout>
+
+      {/* ACTION BUTTONS */}
+      <div className="action-row">
+        <button onClick={() => navigate('/dashboard')}>
+          <MapPin size={18} /> Reserve Spot
+        </button>
+
+        <button onClick={() => navigate('/parking-map')}>
+          <MapPin size={18} /> View Map
+        </button>
+
+        <button onClick={() => navigate('/reservations')}>
+          <Calendar size={18} /> My Reservations
+        </button>
+      </div>
+
+      {/* PARKING AREAS */}
+      <div className="glass-card">
+        <h2>Parking Areas</h2>
+
+        {areas.map((area) => (
+          <div key={area.name} className="area-card">
+            <div className="area-header">
+              <span>{area.name}</span>
+              <span className={area.status === 'available' ? 'green' : 'red'}>
+                {area.status === 'available' ? 'Available' : 'Unavailable'}
+              </span>
+            </div>
+
+            <div className="spot-row">
+              <div>
+                <Bike size={14} /> Motorcycle — {area.moto}
+              </div>
+
+              <div>
+                <Car size={14} /> Car — {area.car}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ANNOUNCEMENTS */}
+      <div className="glass-card announcement">
+        <h2>Announcements</h2>
+        <p>RTL area currently unavailable</p>
+      </div>
+    </div>
   );
 }

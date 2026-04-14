@@ -1,5 +1,15 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, LayoutDashboard, Map, Bell, Settings, LogOut, User } from 'lucide-react';
+import {
+  Home,
+  LayoutDashboard,
+  Map,
+  Bell,
+  Settings,
+  LogOut,
+  User,
+} from 'lucide-react';
+
+import logo from '../assets/logo.png'; 
 
 const navItems = [
   { to: '/home', icon: Home, label: 'HOME' },
@@ -15,29 +25,28 @@ export default function SidebarLayout({ children }) {
   return (
     <div className="app-layout">
       <aside className="sidebar">
-        {/* Logo */}
-        <div className="sidebar-logo">
-          <div className="sidebar-logo-inner">
-            <div className="sidebar-logo-icon">
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <div className="sidebar-logo-title">Smart Parking</div>
-              <div className="sidebar-logo-subtitle">CIT-U System</div>
-            </div>
-          </div>
-        </div>
 
-        {/* Navigation */}
+        {/* LOGO */}
+        <div className="sidebar-logo">
+  <div className="sidebar-logo-inner">
+    <img src={logo} alt="Logo" className="sidebar-logo-img" />
+  </div>
+
+  <div>
+    <div className="sidebar-logo-title">Smart Parking</div>
+    <div className="sidebar-logo-subtitle">CIT-U System</div>
+  </div>
+</div>
+
+        {/* NAV */}
         <nav className="sidebar-nav">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
-              className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+              className={({ isActive }) =>
+                `nav-link${isActive ? ' active' : ''}`
+              }
             >
               <item.icon size={16} />
               <span>{item.label}</span>
@@ -45,22 +54,25 @@ export default function SidebarLayout({ children }) {
           ))}
         </nav>
 
-        {/* User */}
+        {/* USER */}
         <div className="sidebar-footer">
           <div className="sidebar-user">
             <div className="user-avatar">
               <User size={16} />
             </div>
+
             <div>
               <div className="user-name">John Doe</div>
               <div className="user-id">12-3456-789</div>
             </div>
           </div>
+
           <button className="btn-logout" onClick={() => navigate('/')}>
             <LogOut size={16} />
             <span>LOG OUT</span>
           </button>
         </div>
+
       </aside>
 
       <main className="main-content">{children}</main>

@@ -1,65 +1,153 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import logo from '../assets/logo.png';
 export default function SignUp() {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
-    name: '', studentId: '', email: '', password: '', confirmPassword: ''
+    name: '',
+    studentId: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate('/home');
+    navigate('/');
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-container">
-        <div className="auth-logo-wrap">
-          <div className="auth-logo-box">
-            <div className="auth-logo-inner">
-              <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-          <h1 className="auth-app-title">Smart Parking</h1>
-          <p className="auth-app-sub">CIT-U Parking System</p>
-        </div>
+    <div>
+      {/* HEADER */}
+      <div className="header-banner">
+       <img src={logo} alt="logo" />
+        <h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1>
+      </div>
 
-        <div className="auth-card">
-          <h2 className="auth-card-title">REGISTER</h2>
-          <form onSubmit={handleSubmit} className="auth-form">
-            {[
-              { label: 'Name', name: 'name', type: 'text', placeholder: 'Enter your name' },
-              { label: 'STUDENT ID NO', name: 'studentId', type: 'text', placeholder: '12-3456-789' },
-              { label: 'INSTITUTIONAL EMAIL', name: 'email', type: 'email', placeholder: 'student@cit-u.edu.ph' },
-              { label: 'PASSWORD', name: 'password', type: 'password', placeholder: 'Enter password' },
-              { label: 'CONFIRM PASSWORD', name: 'confirmPassword', type: 'password', placeholder: 'Confirm password' },
-            ].map((field) => (
-              <div key={field.name} className="form-group">
-                <label>{field.label}</label>
-                <input
-                  type={field.type}
-                  name={field.name}
-                  value={formData[field.name]}
-                  onChange={handleChange}
-                  placeholder={field.placeholder}
-                  className="form-input"
-                />
-              </div>
-            ))}
-            <button type="submit" className="btn-submit">REGISTER</button>
-          </form>
-          <div className="auth-footer">
-            <span>Already have an account? </span>
-            <button className="btn-link" onClick={() => navigate('/')}>Back to Log In</button>
+      {/* AUTH CARD */}
+      <div className="glass-card" style={{ maxWidth: '400px', margin: '40px auto' }}>
+        <h2 style={{ textAlign: 'center' }}>REGISTER</h2>
+
+        <form onSubmit={handleSubmit}>
+          {/* NAME */}
+          <div className="area-card">
+            <div className="area-header">
+              <span>Name</span>
+            </div>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your name"
+              style={inputStyle}
+            />
           </div>
-        </div>
+
+          {/* STUDENT ID */}
+          <div className="area-card">
+            <div className="area-header">
+              <span>Student ID</span>
+            </div>
+            <input
+              type="text"
+              name="studentId"
+              value={formData.studentId}
+              onChange={handleChange}
+              placeholder="12-3456-789"
+              style={inputStyle}
+            />
+          </div>
+
+          {/* EMAIL */}
+          <div className="area-card">
+            <div className="area-header">
+              <span>Email</span>
+            </div>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="student@cit-u.edu.ph"
+              style={inputStyle}
+            />
+          </div>
+
+          {/* PASSWORD */}
+          <div className="area-card">
+            <div className="area-header">
+              <span>Password</span>
+            </div>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter password"
+              style={inputStyle}
+            />
+          </div>
+
+          {/* CONFIRM PASSWORD */}
+          <div className="area-card">
+            <div className="area-header">
+              <span>Confirm Password</span>
+            </div>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm password"
+              style={inputStyle}
+            />
+          </div>
+
+          {/* BUTTON */}
+          <button
+            type="submit"
+            style={{
+              width: '100%',
+              marginTop: 15,
+              background: '#8b4a4a',
+              border: 'none',
+              color: 'white',
+              padding: '10px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+            }}
+          >
+            REGISTER
+          </button>
+        </form>
+
+        {/* FOOTER */}
+        <p style={{ textAlign: 'center', marginTop: 10, fontSize: 12 }}>
+          Already have an account?{' '}
+          <span
+            onClick={() => navigate('/')}
+            style={{ color: 'gold', cursor: 'pointer' }}
+          >
+            Login
+          </span>
+        </p>
       </div>
     </div>
   );
 }
+
+/* INPUT STYLE */
+const inputStyle = {
+  width: '100%',
+  marginTop: 8,
+  padding: 8,
+  borderRadius: 8,
+  border: 'none',
+  outline: 'none',
+};
