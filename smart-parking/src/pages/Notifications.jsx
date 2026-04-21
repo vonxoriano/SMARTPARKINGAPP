@@ -1,14 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { Bell, Clock, Car, Bike, MapPin } from 'lucide-react';
+import { useContext } from 'react';
+import { Clock, Car, Bike, MapPin } from 'lucide-react';
 import logo from '../assets/logo.png';
-const notifications = [
-  { id: 1, title: 'RTL Area Unavailable', message: 'RTL area is currently closed for maintenance.', time: '2 hours ago', read: false },
-  { id: 2, title: 'Reservation Confirmed', message: 'Your parking spot at OPEN AREA has been reserved.', time: '1 day ago', read: true },
-  { id: 3, title: 'Reservation Expiring', message: 'Your reservation will expire in 15 minutes.', time: '2 days ago', read: true },
-];
+import { ParkingContext } from '../context/ParkingContext';
 
 export default function Notifications() {
   const navigate = useNavigate();
+  const { notifications, markAllAsRead, reservations } = useContext(ParkingContext);
 
   return (
     <div>
@@ -27,49 +25,67 @@ export default function Notifications() {
         <button onClick={() => navigate('/settings')}>SETTINGS</button>
       </div>
 
-      {/* NOTIFICATIONS CARD */}
+      {/* NOTIFICATIONS */}
       <div className="glass-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2>All Notifications</h2>
-          <button style={{
-            background: '#8b4a4a',
-            border: 'none',
-            color: 'white',
-            padding: '6px 10px',
-            borderRadius: '8px',
-            cursor: 'pointer'
-          }}>
+          <button
+            onClick={markAllAsRead}
+            style={{
+              background: '#8b4a4a',
+              border: 'none',
+              color: 'white',
+              padding: '6px 10px',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}
+          >
             Mark all as read
           </button>
         </div>
 
         {/* LIST */}
         <div style={{ marginTop: 10 }}>
-          {notifications.map((n) => (
-            <div
-              key={n.id}
-              className="area-card"
-              style={{
-                borderLeft: n.read ? '3px solid transparent' : '3px solid gold'
-              }}
-            >
-              {/* TITLE ROW */}
-              <div className="area-header">
-                <span>{n.title}</span>
-                {!n.read && <span className="red">NEW</span>}
-              </div>
+          {notifications.length === 0 ? (
+            <p>No notifications yet.</p>
+          ) : (
+            notifications.map((n) => (
+              <div
+                key={n.id}
+                className="area-card"
+                style={{
+                  borderLeft: n.read ? '3px solid transparent' : '3px solid gold'
+                }}
+              >
+                {/* TITLE */}
+                <div className="area-header">
+                  <span>{n.title}</span>
+                  {!n.read && <span className="red">NEW</span>}
+                </div>
 
-              {/* MESSAGE */}
-              <div className="spot-row" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                <span>{n.message}</span>
+                {/* MESSAGE */}
+                <div
+                  className="spot-row"
+                  style={{ flexDirection: 'column', alignItems: 'flex-start' }}
+                >
+                  <span>{n.message}</span>
 
-                <div style={{ display: 'flex', gap: 6, marginTop: 5, fontSize: 12, opacity: 0.8 }}>
-                  <Clock size={12} />
-                  <span>{n.time}</span>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: 6,
+                      marginTop: 5,
+                      fontSize: 12,
+                      opacity: 0.8
+                    }}
+                  >
+                    <Clock size={12} />
+                    <span>{n.time}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
@@ -80,21 +96,27 @@ export default function Notifications() {
         <div className="area-card">
           <div className="area-header">
             <span><Car size={14} /> Car Reservations</span>
-            <span className="green">5</span>
+            <span className="green">
+              {reservations.filter(r => r.vehicle === 'CAR').length}
+            </span>
           </div>
         </div>
 
         <div className="area-card">
           <div className="area-header">
             <span><Bike size={14} /> Motorcycle</span>
-            <span className="green">3</span>
+            <span className="green">
+              {reservations.filter(r => r.vehicle === 'MOTORCYCLE').length}
+            </span>
           </div>
         </div>
 
         <div className="area-card">
           <div className="area-header">
             <span><MapPin size={14} /> Areas Visited</span>
-            <span className="green">8</span>
+            <span className="green">
+              {new Set(reservations.map(r => r.area)).size}
+            </span>
           </div>
         </div>
       </div>

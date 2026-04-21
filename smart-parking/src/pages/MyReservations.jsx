@@ -1,100 +1,116 @@
-import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
-import { MapPin } from 'lucide-react';
-import logo from '../assets/logo.png';
+import { useContext, useEffect, useState } from 'react';
 import { ParkingContext } from '../context/ParkingContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function MyReservations() {
-  const navigate = useNavigate();
   const { reservations, cancelReservation } = useContext(ParkingContext);
+  const navigate = useNavigate();
+
+  // 🔄 force re-render every second for countdown updates
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // ⏱ countdown logic
+  const getTimeLeft = (expiresAt) => {
+    if (!expiresAt) return 'N/A';
+
+    const diff = expiresAt - Date.now();
+
+    if (diff <= 0) return 'Expired';
+
+    const minutes = Math.floor(diff / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
+
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // 🎨 UI helper for expired
+  const isExpired = (expiresAt) => {
+    return expiresAt && expiresAt <= Date.now();
+  };
 
   return (
-    <div>
-      {/* HEADER */}
-      <div className="header-banner">
-        <img src={logo} alt="logo" />
-        <h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1>
-      </div>
+    <div className="glass-card" style={{ padding: '20px' }}>
+      <h2>My Reservations</h2>
 
-      {/* NAVIGATION */}
-      <div className="nav-tabs">
-        <button onClick={() => navigate('/')}>HOME</button>
-        <button onClick={() => navigate('/dashboard')}>DASHBOARD</button>
-        <button onClick={() => navigate('/parking-map')}>PARKING MAP</button>
-        <button onClick={() => navigate('/notifications')}>NOTIFICATIONS</button>
-        <button onClick={() => navigate('/settings')}>SETTINGS</button>
-      </div>
+      {reservations.length === 0 ? (
+        <p>No active reservations.</p>
+      ) : (
+        reservations.map((res) => (
+          <div
+            key={res.id}
+            className="area-card"
+            style={{
+              marginTop: 10,
+              opacity: isExpired(res.expiresAt) ? 0.5 : 1,
+              borderLeft: isExpired(res.expiresAt)
+                ? '3px solid red'
+                : '3px solid green',
+            }}
+          >
+            {/* HEADER */}
+            <div className="area-header">
+              <span>
+                {res.vehicle} - {res.area}
+              </span>
 
-      {/* ACTION BUTTONS */}
-      <div className="action-row">
-        <button onClick={() => navigate('/dashboard')}>
-          <MapPin size={18} /> Reserve Spot
-        </button>
+              <span>
+                {isExpired(res.expiresAt)
+                  ? 'EXPIRED'
+                  : getTimeLeft(res.expiresAt)}
+              </span>
+            </div>
 
-        <button onClick={() => navigate('/parking-map')}>
-          <MapPin size={18} /> View Map
-        </button>
-      </div>
+            {/* DETAILS */}
+            <div className="spot-row" style={{ flexDirection: 'column' }}>
+              <span>Date: {res.date}</span>
+              <span>Time: {res.time}</span>
+              <span>Spot ID: {res.spotId || 'N/A'}</span>
+            </div>
 
-      {/* RESERVATIONS */}
-      <div className="glass-card">
-        <h2>My Reservations</h2>
+            {/* ACTIONS */}
+            <div style={{ marginTop: 10 }}>
+              {!isExpired(res.expiresAt) && (
+                <button
+                  onClick={() => cancelReservation(res.id)}
+                  style={{
+                    background: '#8b4a4a',
+                    color: 'white',
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: 6,
+                    cursor: 'pointer',
+                    marginRight: 10,
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
 
-        {reservations.length > 0 ? (
-          reservations.map((r) => (
-            <div key={r.id} className="area-card" style={{ position: 'relative' }}>
-              
-              <button 
-                onClick={() => cancelReservation(r.id)}
+              <button
+                onClick={() => navigate('/parking-map')}
                 style={{
-                  position: 'absolute',
-                  top: '10px',
-                  right: '10px',
-                  background: 'red',
+                  background: '#444',
                   color: 'white',
                   border: 'none',
-                  padding: '4px 8px',
-                  borderRadius: '4px',
+                  padding: '6px 12px',
+                  borderRadius: 6,
                   cursor: 'pointer',
-                  fontSize: '12px'
                 }}
               >
-                DELETE
+                View Map
               </button>
-
-              {/* TOP INFO */}
-              <div className="area-header">
-                <span>{r.vehicle}</span>
-                <span className="green">{r.status}</span>
-              </div>
-
-              {/* DETAILS */}
-              <div className="spot-row">
-                <div>Area: {r.area}</div>
-                <div>Time: {r.time}</div>
-              </div>
-
-              <div className="spot-row">
-                <div>Date: {r.date}</div>
-                <div>Minutes Left: {r.minutesLeft}</div>
-              </div>
-
-              {/* PROGRESS BAR */}
-              <div className="progress-wrap" style={{ marginTop: '10px' }}>
-                <div className="progress-bar" style={{ width: '70%' }}></div>
-              </div>
-
             </div>
-          ))
-        ) : (
-          <div style={{ textAlign: 'center' }}>
-            <p>No reservations yet</p>
-            <button onClick={() => navigate('/dashboard')}>
-              Reserve Now
-            </button>
           </div>
-        )}
-      </div>
+        ))
+      )}
     </div>
   );
 }

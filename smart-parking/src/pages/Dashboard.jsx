@@ -1,35 +1,22 @@
 import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
 import { Car, Bike, MapPin } from 'lucide-react';
 import logo from '../assets/logo.png';
-const parkingAreas = [
-  {
-    name: 'RTL AREA',
-    status: 'unavailable',
-    spots: [
-      { type: 'Motorcycle', icon: Bike, count: '2/50' },
-      { type: 'Car', icon: Car, count: '0/50' }
-    ]
-  },
-  {
-    name: 'OPEN AREA',
-    status: 'available',
-    spots: [
-      { type: 'Motorcycle', icon: Bike, count: '10/50' },
-      { type: 'Car', icon: Car, count: '0/50' }
-    ]
-  },
-  {
-    name: 'BACKGATE',
-    status: 'available',
-    spots: [
-      { type: 'Motorcycle', icon: Bike, count: '0/50' },
-      { type: 'Car', icon: Car, count: '0/50' }
-    ]
-  },
-];
+import { ParkingContext } from '../context/ParkingContext';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { parkingAreas } = useContext(ParkingContext);
+
+  const getCounts = (spots) => {
+    const total = spots.length;
+    const taken = spots.filter(s => s.status === 'taken').length;
+    return `${taken}/${total}`;
+  };
+
+  const isAreaAvailable = (spots) => {
+    return spots.some(s => s.status === 'vacant');
+  };
 
   return (
     <div>
@@ -52,24 +39,29 @@ export default function Dashboard() {
       <div className="glass-card">
         <h2>AVAILABLE SPOTS</h2>
 
-        {parkingAreas.map((area) => (
-          <div key={area.name} className="area-card">
-            <div className="area-header">
-              <span>{area.name}</span>
-              <span className={area.status === 'available' ? 'green' : 'red'}>
-                {area.status === 'available' ? 'Available' : 'Unavailable'}
-              </span>
-            </div>
+        {parkingAreas.map((area) => {
+          const available = isAreaAvailable(area.spots);
 
-            <div className="spot-row">
-              {area.spots.map((spot) => (
-                <div key={spot.type}>
-                  <spot.icon size={14} /> {spot.type} — {spot.count}
+          return (
+            <div key={area.name} className="area-card">
+              <div className="area-header">
+                <span>{area.name}</span>
+                <span className={available ? 'green' : 'red'}>
+                  {available ? 'Available' : 'Unavailable'}
+                </span>
+              </div>
+
+              <div className="spot-row">
+                <div>
+                  <Bike size={14} /> Motorcycle — {getCounts(area.spots)}
                 </div>
-              ))}
+                <div>
+                  <Car size={14} /> Car — {getCounts(area.spots)}
+                </div>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* ACTION BUTTONS */}
@@ -86,7 +78,7 @@ export default function Dashboard() {
       {/* ANNOUNCEMENTS */}
       <div className="glass-card announcement">
         <h2>Announcements</h2>
-        <p>Backgate area currently unavailable</p>
+        <p>Parking availability updates in real-time.</p>
       </div>
     </div>
   );
