@@ -1,28 +1,13 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Car, Bike } from 'lucide-react';
 import logo from '../assets/logo.png';
-const generateSpots = (count) =>
-  Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    status:
-      Math.random() > 0.7
-        ? 'taken'
-        : Math.random() > 0.9
-        ? 'reserved'
-        : 'vacant',
-  }));
-
-const initialAreas = [
-  { name: 'RTL AREA', spots: generateSpots(20) },
-  { name: 'OPEN AREA', spots: generateSpots(20) },
-  { name: 'BACKGATE', spots: generateSpots(20) },
-];
+import { ParkingContext } from '../context/ParkingContext';
 
 export default function ParkingMap() {
   const navigate = useNavigate();
   const [selectedVehicle, setSelectedVehicle] = useState('car');
-  const [parkingAreas] = useState(initialAreas);
+  const { parkingAreas } = useContext(ParkingContext);
 
   return (
     <div>
@@ -106,6 +91,11 @@ export default function ParkingMap() {
             {area.spots.map((spot) => (
               <div
                 key={spot.id}
+                onClick={() => {
+                  if (spot.status === 'vacant') {
+                    navigate(`/reserve-spot?area=${encodeURIComponent(area.name)}&vehicle=${encodeURIComponent(selectedVehicle.toUpperCase())}&spotId=${spot.id}`);
+                  }
+                }}
                 style={{
                   width: '100%',
                   paddingTop: '100%',
@@ -117,6 +107,7 @@ export default function ParkingMap() {
                       ? 'red'
                       : 'gold',
                   opacity: spot.status === 'vacant' ? 0.7 : 1,
+                  cursor: spot.status === 'vacant' ? 'pointer' : 'default',
                 }}
               />
             ))}

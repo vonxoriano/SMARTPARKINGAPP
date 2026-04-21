@@ -66,6 +66,101 @@ body::before {
   color: black;
 }
 
+/* SUB NAVIGATION */
+.sub-nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: -5px 0 15px 0;
+}
+
+.sub-nav button {
+  background: #8b4a4a;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.sub-nav .active-sub {
+  background: gold;
+  color: black;
+  border: 1px solid #c99300;
+}
+
+/* RESERVE SPOT INFO */
+.reserve-content-wrapper {
+  display: flex;
+  position: relative;
+  min-height: 200px;
+  justify-content: space-between;
+}
+
+.reserve-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 2;
+  margin-top: 10px;
+}
+
+.reserve-info-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.reserve-info-label {
+  width: 70px;
+}
+
+.reserve-info-value {
+  background: gold;
+  color: black;
+  padding: 4px 15px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.reserve-logo {
+  right: 10px;
+  top: 10%;
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  opacity: 0.9;
+}
+
+.reserve-reminder {
+  margin-top: 40px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.reserve-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  width: 80%;
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.reserve-actions button {
+  background: #8b4a4a;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
 /* ACTION BUTTONS */
 .action-row {
   display: flex;

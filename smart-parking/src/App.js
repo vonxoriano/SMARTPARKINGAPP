@@ -7,6 +7,8 @@ import ParkingMap from './pages/ParkingMap';
 import Notifications from './pages/Notifications';
 import Settings from './pages/Settings';
 import MyReservations from './pages/MyReservations';
+import ReserveSpot from './pages/ReserveSpot';
+import SuccessReservation from './pages/SuccessReservation';
 
 export default function App() {
   return (
@@ -20,6 +22,8 @@ export default function App() {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/reservations" element={<MyReservations />} />
+        <Route path="/reserve-spot" element={<ReserveSpot />} />
+        <Route path="/success-reservation" element={<SuccessReservation />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

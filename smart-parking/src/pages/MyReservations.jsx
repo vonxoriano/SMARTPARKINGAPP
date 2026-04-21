@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
 import { MapPin } from 'lucide-react';
 import logo from '../assets/logo.png';
-const reservations = [
-  { id: 1, area: 'RTL', vehicle: 'CAR', time: '2:00PM', date: '3/14/2026', status: 'ACTIVE', minutesLeft: '10:37' }
-];
+import { ParkingContext } from '../context/ParkingContext';
 
 export default function MyReservations() {
   const navigate = useNavigate();
+  const { reservations, cancelReservation } = useContext(ParkingContext);
 
   return (
     <div>
@@ -42,8 +42,26 @@ export default function MyReservations() {
 
         {reservations.length > 0 ? (
           reservations.map((r) => (
-            <div key={r.id} className="area-card">
+            <div key={r.id} className="area-card" style={{ position: 'relative' }}>
               
+              <button 
+                onClick={() => cancelReservation(r.id)}
+                style={{
+                  position: 'absolute',
+                  top: '10px',
+                  right: '10px',
+                  background: 'red',
+                  color: 'white',
+                  border: 'none',
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '12px'
+                }}
+              >
+                DELETE
+              </button>
+
               {/* TOP INFO */}
               <div className="area-header">
                 <span>{r.vehicle}</span>
