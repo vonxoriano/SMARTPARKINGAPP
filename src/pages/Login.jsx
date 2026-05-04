@@ -9,7 +9,17 @@ export default function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    navigate('/home');
+    const currentPassword = localStorage.getItem('testUserPassword') || 'test1234';
+    if (idNumber === '23-3724-353' && password === currentPassword) {
+      localStorage.setItem('userProfile', JSON.stringify({
+        name: 'Superuser Test',
+        email: 'superuser@cit-u.edu.ph',
+        studentId: idNumber
+      }));
+      navigate('/home');
+    } else {
+      alert('Invalid ID Number or Password');
+    }
   };
 
   return (

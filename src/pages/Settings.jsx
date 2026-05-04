@@ -19,22 +19,38 @@ export default function Settings() {
       const saved = localStorage.getItem('userProfile');
       if (saved) return JSON.parse(saved);
     } catch (_) { }
-    return { name: 'John Doe', email: 'john.doe@cit-u.edu.ph', studentId: '12-3456-789' };
+    return { name: 'Superuser Test', email: 'superuser@cit-u.edu.ph', studentId: '23-3724-353' };
   };
 
-  const [formData, setFormData] = useState(loadProfile);
+  const [formData] = useState(loadProfile);
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const [passwords, setPasswords] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
 
-  const handleSaveProfile = () => {
-    localStorage.setItem('userProfile', JSON.stringify(formData));
-    addNotification({
-      type: 'profile_updated',
-      title: 'Profile Updated',
-      message: `Your profile info (${formData.name}, ${formData.email}) has been saved successfully.`,
-    });
-    alert('✅ Profile saved successfully!');
+  const handlePasswordChange = (e) => {
+    setPasswords({ ...passwords, [e.target.name]: e.target.value });
+  };
+
+  const handleSavePassword = () => {
+    const savedPassword = localStorage.getItem('testUserPassword') || 'test1234';
+    if (passwords.currentPassword !== savedPassword) {
+      alert('Current password is incorrect!');
+      return;
+    }
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      alert('New passwords do not match!');
+      return;
+    }
+    if (passwords.newPassword.length < 4) {
+      alert('Password too short!');
+      return;
+    }
+    localStorage.setItem('testUserPassword', passwords.newPassword);
+    alert('Password changed successfully!');
+    setPasswords({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
 
   // When user picks a file, read it as base64 and save to localStorage
@@ -65,11 +81,7 @@ export default function Settings() {
     { label: 'Student ID', name: 'studentId', type: 'text' },
   ];
 
-  const pwFields = [
-    { label: 'Current Password', placeholder: 'Enter current password' },
-    { label: 'New Password', placeholder: 'Enter new password' },
-    { label: 'Confirm New Password', placeholder: 'Confirm new password' },
-  ];
+
 
   return (
     <div>
@@ -195,7 +207,7 @@ export default function Settings() {
               type={f.type}
               name={f.name}
               value={formData[f.name]}
-              onChange={handleChange}
+              readOnly
               style={{
                 width: '100%',
                 marginTop: 8,
@@ -203,15 +215,55 @@ export default function Settings() {
                 borderRadius: 8,
                 border: 'none',
                 outline: 'none',
+                opacity: 0.7,
+                cursor: 'not-allowed'
               }}
             />
           </div>
         ))}
 
-        {/* SAVE PROFILE BUTTON */}
+
+      </div>
+
+      {/* PASSWORD */}
+      <div className="glass-card">
+        <h2>Change Password</h2>
+        <div className="area-card">
+          <div className="area-header"><span>Current Password</span></div>
+          <input
+            type="password"
+            name="currentPassword"
+            value={passwords.currentPassword}
+            onChange={handlePasswordChange}
+            placeholder="Enter current password"
+            style={{ width: '100%', marginTop: 8, padding: 8, borderRadius: 8, border: 'none', outline: 'none' }}
+          />
+        </div>
+        <div className="area-card">
+          <div className="area-header"><span>New Password</span></div>
+          <input
+            type="password"
+            name="newPassword"
+            value={passwords.newPassword}
+            onChange={handlePasswordChange}
+            placeholder="Enter new password"
+            style={{ width: '100%', marginTop: 8, padding: 8, borderRadius: 8, border: 'none', outline: 'none' }}
+          />
+        </div>
+        <div className="area-card">
+          <div className="area-header"><span>Confirm New Password</span></div>
+          <input
+            type="password"
+            name="confirmPassword"
+            value={passwords.confirmPassword}
+            onChange={handlePasswordChange}
+            placeholder="Confirm new password"
+            style={{ width: '100%', marginTop: 8, padding: 8, borderRadius: 8, border: 'none', outline: 'none' }}
+          />
+        </div>
         <div style={{ marginTop: '14px', textAlign: 'right' }}>
           <button
-            onClick={handleSaveProfile}
+            onClick={handleSavePassword}
             style={{
               background: '#4a8b4a',
               border: 'none',
@@ -223,33 +275,9 @@ export default function Settings() {
               fontSize: '14px',
             }}
           >
-            💾 Save Profile
+            💾 Change Password
           </button>
         </div>
-      </div>
-
-      {/* PASSWORD */}
-      <div className="glass-card">
-        <h2>Change Password</h2>
-        {pwFields.map((f) => (
-          <div key={f.label} className="area-card">
-            <div className="area-header">
-              <span>{f.label}</span>
-            </div>
-            <input
-              type="password"
-              placeholder={f.placeholder}
-              style={{
-                width: '100%',
-                marginTop: 8,
-                padding: 8,
-                borderRadius: 8,
-                border: 'none',
-                outline: 'none',
-              }}
-            />
-          </div>
-        ))}
       </div>
 
       {/* ACCOUNT */}

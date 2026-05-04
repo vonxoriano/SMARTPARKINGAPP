@@ -1,35 +1,50 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Car, Bike, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import logo from '../assets/logo.png';
-const parkingAreas = [
+
+const STATIC_AREAS = [
   {
     name: 'RTL AREA',
-    status: 'unavailable',
     spots: [
-      { type: 'Motorcycle', icon: Bike, count: '2/50' },
-      { type: 'Car', icon: Car, count: '0/50' }
-    ]
+      't','t','t','t','t','t','t','v','v','v',
+      't','t','t','v','t','t','t','v','v','v',
+    ].map((s, i) => ({ id: i + 1, status: s === 'v' ? 'vacant' : s === 't' ? 'taken' : 'reserved' })),
   },
   {
     name: 'OPEN AREA',
-    status: 'available',
     spots: [
-      { type: 'Motorcycle', icon: Bike, count: '10/50' },
-      { type: 'Car', icon: Car, count: '0/50' }
-    ]
+      'v','t','v','v','v','t','v','v','v','t',
+      't','t','v','t','t','v','v','t','t','t',
+    ].map((s, i) => ({ id: i + 1, status: s === 'v' ? 'vacant' : s === 't' ? 'taken' : 'reserved' })),
   },
   {
     name: 'BACKGATE',
-    status: 'available',
     spots: [
-      { type: 'Motorcycle', icon: Bike, count: '0/50' },
-      { type: 'Car', icon: Car, count: '0/50' }
-    ]
+      'v','t','t','v','v','v','t','v','t','v',
+      'v','t','v','t','v','v','t','t','v','v',
+    ].map((s, i) => ({ id: i + 1, status: s === 'v' ? 'vacant' : s === 't' ? 'taken' : 'reserved' })),
   },
 ];
 
+const loadAreas = () => {
+  try {
+    const saved = localStorage.getItem('parkingAreas');
+    if (saved) return JSON.parse(saved);
+  } catch (_) {}
+  return STATIC_AREAS;
+};
+
 export default function Dashboard() {
   const navigate = useNavigate();
+  const [parkingAreas, setParkingAreas] = useState(loadAreas);
+
+  useEffect(() => {
+    setParkingAreas(loadAreas());
+    const handleUpdate = () => setParkingAreas(loadAreas());
+    window.addEventListener('parkingAreasUpdated', handleUpdate);
+    return () => window.removeEventListener('parkingAreasUpdated', handleUpdate);
+  }, []);
 
   return (
     <div>
@@ -52,32 +67,30 @@ export default function Dashboard() {
       <div className="glass-card">
         <h2>AVAILABLE SPOTS</h2>
 
-        {parkingAreas.map((area) => (
-          <div key={area.name} className="area-card">
-            <div className="area-header">
-              <span>{area.name}</span>
-              <span className={area.status === 'available' ? 'green' : 'red'}>
-                {area.status === 'available' ? 'Available' : 'Unavailable'}
-              </span>
-            </div>
+        {parkingAreas.map((area) => {
+          const vacantCount = area.spots.filter((s) => s.status === 'vacant').length;
+          const isAvailable = vacantCount > 0;
+          return (
+            <div key={area.name} className="area-card">
+              <div className="area-header">
+                <span>{area.name}</span>
+                <span className={isAvailable ? 'green' : 'red'}>
+                  {isAvailable ? 'Available' : 'Unavailable'}
+                </span>
+              </div>
 
-            <div className="spot-row">
-              {area.spots.map((spot) => (
-                <div key={spot.type}>
-                  <spot.icon size={14} /> {spot.type} — {spot.count}
+              <div className="spot-row">
+                <div style={{ fontWeight: 'bold', color: isAvailable ? '#76ff03' : 'red' }}>
+                  Vacant: {vacantCount}/{area.spots.length}
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* ACTION BUTTONS */}
       <div className="action-row">
-        <button onClick={() => navigate('/reservations')}>
-          <MapPin size={18} /> View Reservations History
-        </button>
-
         <button onClick={() => navigate('/parking-map')}>
           <MapPin size={18} /> View Map
         </button>

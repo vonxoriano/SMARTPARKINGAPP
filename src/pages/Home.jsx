@@ -1,14 +1,55 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Calendar, Car, Bike } from 'lucide-react';
 import logo from '../assets/logo.png';
-const areas = [
-  { name: 'RTL Area', status: 'unavailable', moto: '0/50', car: '0/50' },
-  { name: 'Open Area', status: 'available', moto: '10/50', car: '0/50' },
-  { name: 'Backgate', status: 'available', moto: '0/50', car: '0/50' },
+
+const STATIC_AREAS = [
+  {
+    name: 'RTL AREA',
+    spots: [
+      't','t','t','t','t','t','t','v','v','v',
+      't','t','t','v','t','t','t','v','v','v',
+    ].map((s, i) => ({ id: i + 1, status: s === 'v' ? 'vacant' : s === 't' ? 'taken' : 'reserved' })),
+  },
+  {
+    name: 'OPEN AREA',
+    spots: [
+      'v','t','v','v','v','t','v','v','v','t',
+      't','t','v','t','t','v','v','t','t','t',
+    ].map((s, i) => ({ id: i + 1, status: s === 'v' ? 'vacant' : s === 't' ? 'taken' : 'reserved' })),
+  },
+  {
+    name: 'BACKGATE',
+    spots: [
+      'v','t','t','v','v','v','t','v','t','v',
+      'v','t','v','t','v','v','t','t','v','v',
+    ].map((s, i) => ({ id: i + 1, status: s === 'v' ? 'vacant' : s === 't' ? 'taken' : 'reserved' })),
+  },
 ];
+
+const loadAreas = () => {
+  try {
+    const saved = localStorage.getItem('parkingAreas');
+    if (saved) return JSON.parse(saved);
+  } catch (_) {}
+  return STATIC_AREAS;
+};
 
 export default function Home() {
   const navigate = useNavigate();
+  const [parkingAreas, setParkingAreas] = useState(loadAreas);
+
+  useEffect(() => {
+    setParkingAreas(loadAreas());
+    const handleUpdate = () => setParkingAreas(loadAreas());
+    window.addEventListener('parkingAreasUpdated', handleUpdate);
+    return () => window.removeEventListener('parkingAreasUpdated', handleUpdate);
+  }, []);
+
+  const totalVacant = parkingAreas.reduce((sum, area) => {
+    return sum + area.spots.filter((s) => s.status === 'vacant').length;
+  }, 0);
+  const totalSpots = parkingAreas.reduce((sum, area) => sum + area.spots.length, 0);
 
   return (
     <div>
@@ -32,7 +73,7 @@ export default function Home() {
         <h2>Available Spots</h2>
 
         <div className="spots-number">
-          20<span>/300</span>
+          {totalVacant}<span>/{totalSpots}</span>
         </div>
 
         <div className="progress-wrap">
@@ -59,26 +100,26 @@ export default function Home() {
       <div className="glass-card">
         <h2>Parking Areas</h2>
 
-        {areas.map((area) => (
-          <div key={area.name} className="area-card">
-            <div className="area-header">
-              <span>{area.name}</span>
-              <span className={area.status === 'available' ? 'green' : 'red'}>
-                {area.status === 'available' ? 'Available' : 'Unavailable'}
-              </span>
-            </div>
-
-            <div className="spot-row">
-              <div>
-                <Bike size={14} /> Motorcycle — {area.moto}
+        {parkingAreas.map((area) => {
+          const vacantCount = area.spots.filter((s) => s.status === 'vacant').length;
+          const isAvailable = vacantCount > 0;
+          return (
+            <div key={area.name} className="area-card">
+              <div className="area-header">
+                <span>{area.name}</span>
+                <span className={isAvailable ? 'green' : 'red'}>
+                  {isAvailable ? 'Available' : 'Unavailable'}
+                </span>
               </div>
 
-              <div>
-                <Car size={14} /> Car — {area.car}
+              <div className="spot-row">
+                <div style={{ fontWeight: 'bold', color: isAvailable ? '#76ff03' : 'red' }}>
+                  Vacant: {vacantCount}/{area.spots.length}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* ANNOUNCEMENTS */}
