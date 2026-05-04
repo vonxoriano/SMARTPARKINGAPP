@@ -85,50 +85,7 @@ export default function Home() {
         </button>
       </div>
 
-      {/* PARKING AREAS */}
-      <div className="glass-card">
-        <h2>Parking Areas</h2>
-        {loading ? (
-          <p style={{ color: '#ccc' }}>Loading…</p>
-        ) : (
-          parkingAreas.map((area) => {
-            const occupied = area.totalSpots - area.vacantSpots;
-            const pct = area.totalSpots > 0 ? (occupied / area.totalSpots) * 100 : 0;
-            const isAvailable = area.vacantSpots > 0;
-
-            return (
-              <div key={area.id} className="area-card">
-                <div className="area-header">
-                  <span>{area.name}</span>
-                  <span className={isAvailable ? 'green' : 'red'}>
-                    {isAvailable ? 'Available' : 'Full'}
-                  </span>
-                </div>
-
-                <div className="spot-row" style={{ marginTop: '4px' }}>
-                  <span style={{ color: '#76ff03', fontWeight: 'bold' }}>
-                    🟢 Available: {area.vacantSpots}/{area.totalSpots}
-                  </span>
-                  <span style={{ color: '#ff6b6b', fontWeight: 'bold' }}>
-                    🔴 Occupied: {occupied}/{area.totalSpots}
-                  </span>
-                </div>
-
-                {/* bar grows as spots get occupied */}
-                <div className="progress-wrap" style={{ marginTop: '8px' }}>
-                  <div
-                    className="progress-bar"
-                    style={{ width: `${pct}%`, background: pct > 80 ? '#ff4444' : pct > 50 ? '#ffaa00' : '#76ff03' }}
-                  />
-                </div>
-                <p style={{ fontSize: '11px', color: '#ccc', marginTop: '4px' }}>
-                  {pct.toFixed(0)}% occupied
-                </p>
-              </div>
-            );
-          })
-        )}
-      </div>
+      
 
       <div className="glass-card announcement">
         <h2>Announcements</h2>
