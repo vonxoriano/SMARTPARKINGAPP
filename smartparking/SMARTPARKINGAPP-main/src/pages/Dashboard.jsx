@@ -93,7 +93,7 @@ export default function Dashboard() {
 
       <div className="glass-card announcement">
         <h2>Announcements</h2>
-        <p>Backgate area currently unavailable</p>
+        <p>--</p>
       </div>
     </div>
   );

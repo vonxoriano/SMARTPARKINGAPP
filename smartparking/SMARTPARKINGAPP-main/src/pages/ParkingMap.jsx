@@ -82,7 +82,7 @@ export default function ParkingMap() {
         <h2>Legend</h2>
         <div className="spot-row">
           <span className="green">● Vacant — click to select</span>
-          <span className="red">● Taken / Reserved</span>
+          <span className="red">● Reserved</span>
           <span style={{ color: '#ffe066' }}>● Selected</span>
         </div>
       </div>
@@ -197,7 +197,6 @@ export default function ParkingMap() {
             {/* STATS + PROGRESS BAR */}
             <div className="spot-row" style={{ marginTop: 10 }}>
               <span className="green">Vacant: {vacantCount}</span>
-              <span className="red">Taken: {area.spots.filter(s => s.status === 'taken').length}</span>
               <span style={{ color: '#ff6b6b' }}>Reserved: {area.spots.filter(s => s.status === 'reserved').length}</span>
             </div>
 

@@ -87,10 +87,7 @@ export const ParkingAPI = {
 // ════════════════════════════════════════════════════════════════════════════
 export const ReservationAPI = {
 
-  /**
-   * Create a reservation.
-   * @param {Object} data - { userId, spotId, vehicle, date, time, durationHours }
-   */
+  /** Create a reservation. Body: { userId, spotId, vehicle, date, time, durationHours } */
   create: (data) => request('POST', '/reservations', data),
 
   /** Get a single reservation by ID */
@@ -102,12 +99,21 @@ export const ReservationAPI = {
     return request('GET', `/reservations/user/${userId}${query}`);
   },
 
-  /** Cancel an active reservation (frees the spot) */
+  /** User pressed "I Arrived" — RESERVED → OCCUPIED */
+  arrive: (id) => request('PATCH', `/reservations/${id}/arrive`),
+
+  /** User pressed "Exit" — OCCUPIED → COMPLETED */
+  exit: (id) => request('PATCH', `/reservations/${id}/exit`),
+
+  /** Frontend timer expired — RESERVED → EXPIRED */
+  expire: (id) => request('PATCH', `/reservations/${id}/expire`),
+
+  /** Cancel a RESERVED reservation */
   cancel: (id) => request('PATCH', `/reservations/${id}/cancel`),
 
-  /** Mark a reservation as completed */
+  /** Mark as completed (admin) */
   complete: (id) => request('PATCH', `/reservations/${id}/complete`),
 
-  /** Hard-delete a reservation record (admin) */
+  /** Hard-delete (admin) */
   delete: (id) => request('DELETE', `/reservations/${id}`),
 };

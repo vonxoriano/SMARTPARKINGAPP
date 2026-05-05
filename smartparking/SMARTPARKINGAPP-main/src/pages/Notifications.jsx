@@ -207,24 +207,6 @@ export default function Notifications() {
         </div>
       </div>
 
-      {/* STATS */}
-      <div className="glass-card">
-        <h2>Your Stats</h2>
-        {[
-          { icon: <Car size={14} />,   label: 'Car Reservations',       val: carCount },
-          { icon: <Bike size={14} />,  label: 'Motorcycle Reservations', val: motoCount },
-          { icon: <MapPin size={14} />,label: 'Unique Areas Visited',     val: areaCount },
-          { icon: <Bell size={14} />,  label: 'Total Notifications',      val: notifs.length },
-          { icon: <span style={{ color:'#ff6b6b' }}>🔴</span>, label: 'Unread Notifications', val: unreadCount, red: true },
-        ].map(({ icon, label, val, red }) => (
-          <div key={label} className="area-card" style={{ marginBottom:'6px' }}>
-            <div className="area-header">
-              <span style={{ display:'flex', alignItems:'center', gap:'6px', color: red ? '#ff6b6b' : undefined }}>{icon} {label}</span>
-              <span style={{ color: red ? '#ff6b6b' : 'lightgreen', fontWeight:'bold' }}>{val}</span>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

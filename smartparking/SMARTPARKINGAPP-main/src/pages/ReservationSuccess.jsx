@@ -49,7 +49,13 @@ export default function ReservationSuccess() {
 
           <div style={detailRow}>
             <span style={detailLabel}><MapPin size={16} /> Area</span>
-            <span style={detailValue}>{reservation.area}</span>
+            {/* backend returns areaName; fall back to area for safety */}
+            <span style={detailValue}>{reservation.areaName || reservation.area || '—'}</span>
+          </div>
+
+          <div style={detailRow}>
+            <span style={detailLabel}><MapPin size={16} /> Slot</span>
+            <span style={detailValue}>#{reservation.slotNumber || '—'}</span>
           </div>
 
           <div style={detailRow}>
@@ -64,7 +70,8 @@ export default function ReservationSuccess() {
 
           <div style={detailRow}>
             <span style={detailLabel}><Clock size={16} /> Duration</span>
-            <span style={detailValue}>{reservation.duration} hour(s)</span>
+            {/* backend returns durationHours; fall back to duration for safety */}
+            <span style={detailValue}>{reservation.durationHours ?? reservation.duration ?? '—'} hour(s)</span>
           </div>
 
           <div style={detailRow}>

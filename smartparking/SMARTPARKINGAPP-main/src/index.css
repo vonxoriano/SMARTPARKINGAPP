@@ -405,3 +405,13 @@ body {
   font-size: 11px;
   color: #aaa;
 }
+
+/* Fix invisible dropdown options */
+select {
+  background: #2a1a1a !important;
+  color: white !important;
+}
+select option {
+  background: #2a1a1a;
+  color: white;
+}
