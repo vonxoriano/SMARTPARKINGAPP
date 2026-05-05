@@ -5,14 +5,16 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
 
-/**
- * Represents a parking reservation made by a User for a specific ParkingSpot.
- */
 @Entity
 @Table(name = "reservations")
 public class Reservation {
 
-    public enum Status  { ACTIVE, COMPLETED, CANCELLED }
+    // RESERVED  = waiting for user to arrive (1 hr window)
+    // OCCUPIED  = user arrived, currently parked
+    // EXPIRED   = user never arrived within 1 hr
+    // COMPLETED = user exited normally
+    // CANCELLED = user cancelled before arriving
+    public enum Status  { RESERVED, OCCUPIED, EXPIRED, COMPLETED, CANCELLED }
     public enum Vehicle { CAR, MOTORCYCLE }
 
     @Id
@@ -42,15 +44,17 @@ public class Reservation {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status = Status.ACTIVE;
+    private Status status = Status.RESERVED;
+
+    // Timestamp when reservation was created — used to calculate 1-hr expiry
+    @Column(name = "reserved_at")
+    private LocalDateTime reservedAt = LocalDateTime.now();
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // ── Constructors ────────────────────────────────────────────────────────
     public Reservation() {}
 
-    // ── Getters & Setters ───────────────────────────────────────────────────
     public Long getId()                              { return id; }
     public void setId(Long id)                       { this.id = id; }
 
@@ -74,6 +78,9 @@ public class Reservation {
 
     public Status getStatus()                        { return status; }
     public void setStatus(Status status)             { this.status = status; }
+
+    public LocalDateTime getReservedAt()             { return reservedAt; }
+    public void setReservedAt(LocalDateTime t)       { this.reservedAt = t; }
 
     public LocalDateTime getCreatedAt()              { return createdAt; }
     public void setCreatedAt(LocalDateTime t)        { this.createdAt = t; }
