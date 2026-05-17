@@ -1,0 +1,27 @@
+# ── Maven build output ──────────────────────────
+target/
+*.class
+*.jar
+*.war
+
+# ── Sensitive config ─────────────────────────────
+# If you want to protect your DB password, copy application.properties
+# to application-local.properties and add it below:
+# application-local.properties
+
+# ── IDE files ────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ── OS files ─────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Logs ─────────────────────────────────────────
+*.log
+logs/
