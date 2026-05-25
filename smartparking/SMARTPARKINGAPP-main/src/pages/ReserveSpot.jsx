@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Car, Bike, MapPin, Clock, Calendar } from 'lucide-react';
-import logo from '../assets/logo.png';
 import { addNotification } from '../notificationUtils';
 import { ReservationAPI } from '../api';
+import Navbar from '../components/Navbar';
 
-// Returns today's date as "YYYY-MM-DD"
 function todayStr() {
   return new Date().toISOString().split('T')[0];
 }
 
-// Returns current time rounded up to next minute as "HH:MM"
 function nowTimeStr() {
   const d = new Date();
   d.setSeconds(0, 0);
@@ -24,16 +22,15 @@ export default function ReserveSpot() {
   const savedArea    = sessionStorage.getItem('selectedArea')   || '';
   const savedSpotId  = parseInt(sessionStorage.getItem('selectedSpotId') || '0', 10);
 
-  const [date, setDate]     = useState(todayStr());
-  const [time, setTime]     = useState(nowTimeStr());
-  const [loading, setLoading] = useState(false);
-  const [error, setError]   = useState('');
+  const [date, setDate]         = useState(todayStr());
+  const [time, setTime]         = useState(nowTimeStr());
+  const [duration, setDuration] = useState(3600000);
+  const [loading, setLoading]   = useState(false);   // ← was missing
+  const [error, setError]       = useState('');
 
-  // When date changes, if user picked today enforce min time
   const handleDateChange = (e) => {
     setDate(e.target.value);
     if (e.target.value === todayStr()) {
-      // Reset time to now if the currently selected time is in the past
       if (time < nowTimeStr()) setTime(nowTimeStr());
     }
   };
@@ -41,7 +38,6 @@ export default function ReserveSpot() {
   const handleConfirm = async () => {
     if (!date || !time) { alert('Please select both a date and time!'); return; }
 
-    // Extra guard: block past date/time
     const chosen = new Date(`${date}T${time}`);
     if (chosen < new Date()) {
       setError('Please choose a current or future date and time.');
@@ -60,10 +56,12 @@ export default function ReserveSpot() {
         vehicle:       savedVehicle.toUpperCase(),
         date,
         time,
-        durationHours: 1,   // always 1 hour
+        durationHours: 1,
+        durationMs:    duration,
       });
 
       sessionStorage.setItem('lastReservation', JSON.stringify(reservation));
+      sessionStorage.setItem('reservationDuration', duration);
 
       addNotification({
         type: 'reservation_confirmed',
@@ -83,9 +81,9 @@ export default function ReserveSpot() {
   const inputStyle = {
     width: '100%', marginTop: '5px', padding: '8px 12px', borderRadius: '8px',
     border: '1px solid rgba(255,255,255,0.3)',
-    background: '#2a1a1a',   // solid so the native date/time picker is readable
+    background: '#2a1a1a',
     color: 'white', fontSize: '14px',
-    colorScheme: 'dark',     // makes the browser date/time widget use dark theme
+    colorScheme: 'dark',
   };
   const selectionBox = {
     background: 'rgba(255,255,255,0.15)', borderRadius: '10px', padding: '14px 20px',
@@ -94,14 +92,7 @@ export default function ReserveSpot() {
 
   return (
     <div>
-      <div className="header-banner"><img src={logo} alt="logo" /><h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1></div>
-      <div className="nav-tabs">
-        <button onClick={() => navigate('/home')}>HOME</button>
-        <button onClick={() => navigate('/dashboard')}>DASHBOARD</button>
-        <button onClick={() => navigate('/parking-map')}>PARKING MAP</button>
-        <button onClick={() => navigate('/notifications')}>NOTIFICATIONS</button>
-        <button onClick={() => navigate('/settings')}>SETTINGS</button>
-      </div>
+      <Navbar />
 
       <div className="glass-card">
         <h2 style={{ fontSize: '20px', marginBottom: '5px' }}>📋 Reserve a Spot</h2>
@@ -130,35 +121,34 @@ export default function ReserveSpot() {
 
       <div className="glass-card">
         <h2>Pick Date & Time</h2>
-        <p style={{ fontSize: '12px', color: '#aaa', marginBottom: '10px' }}>
-          ⏱ Reservation window is <strong>1 hour</strong> — arrive before it expires.
-        </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
           <div>
             <label style={{ fontSize: '13px', color: '#ccc', display: 'flex', alignItems: 'center', gap: '5px' }}>
               <Calendar size={14} /> Date
             </label>
-            <input
-              type="date"
-              value={date}
-              min={todayStr()}          // ← blocks past dates
-              onChange={handleDateChange}
-              style={inputStyle}
-            />
+            <input type="date" value={date} min={todayStr()} onChange={handleDateChange} style={inputStyle} />
           </div>
+
           <div>
             <label style={{ fontSize: '13px', color: '#ccc', display: 'flex', alignItems: 'center', gap: '5px' }}>
               <Clock size={14} /> Time
             </label>
-            <input
-              type="time"
-              value={time}
-              min={date === todayStr() ? nowTimeStr() : undefined}   // ← blocks past times on today
-              onChange={(e) => setTime(e.target.value)}
-              style={inputStyle}
-            />
+            <input type="time" value={time} min={date === todayStr() ? nowTimeStr() : undefined}
+              onChange={(e) => setTime(e.target.value)} style={inputStyle} />
           </div>
-          {/* Duration removed — always 1 hour */}
+
+          {/* Single dropdown — no duplicate */}
+          <div>
+            <label style={{ fontSize: '13px', color: '#ccc', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <Clock size={14} /> Time Duration
+            </label>
+            <select value={duration} onChange={(e) => setDuration(Number(e.target.value))} style={inputStyle}>
+              <option value={10000}>10 seconds (testing)</option>
+              <option value={3600000}>1 hour</option>
+            </select>
+          </div>
+
         </div>
       </div>
 

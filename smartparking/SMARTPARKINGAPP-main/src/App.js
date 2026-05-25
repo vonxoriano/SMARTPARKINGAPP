@@ -9,6 +9,7 @@ import Settings from './pages/Settings';
 import MyReservations from './pages/MyReservations';
 import ReserveSpot from './pages/ReserveSpot';
 import ReservationSuccess from './pages/ReservationSuccess';
+import AdminPanel from './pages/AdminPanel';
 import bgImage from './assets/cit-background.png';
 
 export default function App() {
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/reservations" element={<MyReservations />} />
           <Route path="/reserve-spot" element={<ReserveSpot />} />
           <Route path="/reservation-success" element={<ReservationSuccess />} />
+          <Route path="/admin" element={<AdminPanel />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>

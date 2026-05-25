@@ -17,7 +17,11 @@ export default function Login() {
     try {
       const user = await AuthAPI.login(idNumber, password);
       sessionStorage.setItem('currentUser', JSON.stringify(user));
-      navigate('/home');
+      if (user.role === 'ADMIN') {
+        navigate('/admin');
+      } else {
+        navigate('/home');
+      }
     } catch (err) {
       setError(err.message || 'Invalid ID Number or Password');
     } finally {
@@ -38,14 +42,14 @@ export default function Login() {
         <div className="login-card">
           <h2 className="login-card-title">SIGN IN</h2>
           <p className="login-card-sub">Enter your credentials to continue</p>
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleLogin} autoComplete="off">
             <div className="login-field">
               <label>ID Number</label>
-              <input type="text" value={idNumber} onChange={(e) => setIdNumber(e.target.value)} placeholder="e.g. 12-3456-789" />
+              <input type="text" value={idNumber} onChange={(e) => setIdNumber(e.target.value)} placeholder="e.g. 12-3456-789" autoComplete="off" />
             </div>
             <div className="login-field">
               <label>Password</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" autoComplete="new-password" />
             </div>
             {error && <p style={{ color: '#ff6b6b', fontSize: '13px', margin: '8px 0' }}>⚠ {error}</p>}
             <div className="login-forgot"><button type="button">Forgot Password?</button></div>

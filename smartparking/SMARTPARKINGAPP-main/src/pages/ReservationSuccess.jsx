@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Car, Bike, MapPin, Clock, Calendar } from 'lucide-react';
-import logo from '../assets/logo.png';
+import Navbar from '../components/Navbar';
 
 export default function ReservationSuccess() {
   const navigate = useNavigate();
@@ -9,19 +9,7 @@ export default function ReservationSuccess() {
   return (
     <div>
       {/* HEADER */}
-      <div className="header-banner">
-        <img src={logo} alt="logo" />
-        <h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1>
-      </div>
-
-      {/* NAVIGATION */}
-      <div className="nav-tabs">
-        <button onClick={() => navigate('/home')}>HOME</button>
-        <button onClick={() => navigate('/dashboard')}>DASHBOARD</button>
-        <button onClick={() => navigate('/parking-map')}>PARKING MAP</button>
-        <button onClick={() => navigate('/notifications')}>NOTIFICATIONS</button>
-        <button onClick={() => navigate('/settings')}>SETTINGS</button>
-      </div>
+      <Navbar />
 
       {/* SUCCESS CARD */}
       <div className="glass-card" style={{ textAlign: 'center' }}>

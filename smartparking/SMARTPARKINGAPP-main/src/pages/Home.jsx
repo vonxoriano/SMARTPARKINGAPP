@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Calendar } from 'lucide-react';
-import logo from '../assets/logo.png';
 import { ParkingAPI } from '../api';
+import AnnouncementsCard from '../components/AnnouncementsCard';
+import Navbar from '../components/Navbar';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -23,26 +24,14 @@ export default function Home() {
     load();
   }, []);
 
-  const totalSpots  = parkingAreas.reduce((sum, area) => sum + area.totalSpots, 0);
-  const totalVacant = parkingAreas.reduce((sum, area) => sum + area.vacantSpots, 0);
+  const totalSpots    = parkingAreas.reduce((sum, area) => sum + area.totalSpots, 0);
+  const totalVacant   = parkingAreas.reduce((sum, area) => sum + area.vacantSpots, 0);
   const totalOccupied = totalSpots - totalVacant;
-  // progress bar grows as spots get taken
-  const progressPct = totalSpots > 0 ? (totalOccupied / totalSpots) * 100 : 0;
+  const progressPct   = totalSpots > 0 ? (totalOccupied / totalSpots) * 100 : 0;
 
   return (
     <div>
-      <div className="header-banner">
-        <img src={logo} alt="logo" />
-        <h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1>
-      </div>
-
-      <div className="nav-tabs">
-        <button className="active">HOME</button>
-        <button onClick={() => navigate('/dashboard')}>DASHBOARD</button>
-        <button onClick={() => navigate('/parking-map')}>PARKING MAP</button>
-        <button onClick={() => navigate('/notifications')}>NOTIFICATIONS</button>
-        <button onClick={() => navigate('/settings')}>SETTINGS</button>
-      </div>
+      <Navbar />
 
       {/* AVAILABLE SPOTS */}
       <div className="glass-card">
@@ -51,25 +40,24 @@ export default function Home() {
           <p style={{ color: '#ccc' }}>Loading…</p>
         ) : (
           <>
-            {/* shows occupied / total e.g. 1/60 */}
             <div className="spots-number">
               {totalOccupied}<span>/{totalSpots}</span>
             </div>
-
-            {/* bar grows as more spots are taken */}
             <div className="progress-wrap">
-              <div
-                className="progress-bar"
-                style={{ width: `${progressPct}%` }}
-              />
+              <div className="progress-bar" style={{ width: `${progressPct}%` }} />
             </div>
-
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px', fontSize: '12px', color: '#ccc' }}>
               <span>🟢 Available: {totalVacant}</span>
               <span>🔴 Occupied: {totalOccupied}</span>
             </div>
           </>
         )}
+      </div>
+
+      <div className="glass-card">
+        <h2>Von Soriano</h2>
+        <p>Developer</p>
+        <p>Cebu Institute of Technology University</p>
       </div>
 
       {/* ACTION BUTTONS */}
@@ -85,10 +73,7 @@ export default function Home() {
         </button>
       </div>
 
-      <div className="glass-card announcement">
-        <h2>Announcements</h2>
-        <p>RTL area currently unavailable</p>
-      </div>
+      <AnnouncementsCard />
     </div>
   );
 }

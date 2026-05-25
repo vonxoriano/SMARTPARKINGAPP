@@ -43,28 +43,3 @@ export const clearAll = () => {
 };
 
 export const getUnreadCount = () => getNotifications().filter(n => !n.read).length;
-
-export const seedInitialNotifications = () => {
-  const existing = getNotifications();
-  if (existing.length > 0) return;
-  const now = Date.now();
-  const seeds = [
-    {
-      id: 'seed-1',
-      type: 'system',
-      title: 'Welcome to Smart Parking!',
-      message: 'Your account is ready. Reserve parking spots across campus anytime.',
-      time: new Date(now - 2 * 86400000).toISOString(),
-      read: true,
-    },
-    {
-      id: 'seed-2',
-      type: 'system',
-      title: 'RTL Area Maintenance',
-      message: 'RTL area will be closed for maintenance on April 25 from 8AM–12PM.',
-      time: new Date(now - 86400000).toISOString(),
-      read: false,
-    },
-  ];
-  localStorage.setItem(KEY, JSON.stringify(seeds));
-};

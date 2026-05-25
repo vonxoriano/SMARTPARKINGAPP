@@ -1,15 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Car, Bike, Search, Filter, Clock } from 'lucide-react';
-import logo from '../assets/logo.png';
 import { addNotification } from '../notificationUtils';
 import { ReservationAPI } from '../api';
+import Navbar from '../components/Navbar';
 
 // Countdown timer — counts down to reservedAt + 1 hour
 function useCountdown(reservedAt) {
   const getSecondsLeft = useCallback(() => {
     if (!reservedAt) return 0;
-    const expiry = new Date(reservedAt).getTime() + 60 * 60 * 1000;
+    const duration = Number(sessionStorage.getItem('reservationDuration') || 3600000);
+    const expiry = new Date(reservedAt).getTime() + duration;
     return Math.max(0, Math.floor((expiry - Date.now()) / 1000));
   }, [reservedAt]);
 
@@ -54,7 +55,7 @@ function ReservationCard({ r, onArrive, onExit, onCancel, onDelete }) {
       </div>
       <div className="spot-row" style={{ marginTop: '4px' }}>
         <div>⏰ {r.time}</div>
-        <div>⏱ 1 hr window</div>
+        <div>⏱ 1 hr</div>
       </div>
 
       {/* Countdown — only while RESERVED */}
@@ -171,7 +172,8 @@ export default function MyReservations() {
     const id = setInterval(() => {
       reservations.forEach(r => {
         if (r.status !== 'RESERVED' || !r.reservedAt) return;
-        const expiry = new Date(r.reservedAt).getTime() + 60 * 60 * 1000;
+        const duration = Number(sessionStorage.getItem('reservationDuration') || 3600000);
+        const expiry = new Date(r.reservedAt).getTime() + duration;
         if (Date.now() > expiry) {
           ReservationAPI.expire(r.id).then(updated => {
             setReservations(prev => prev.map(x => x.id === updated.id ? updated : x));
@@ -208,14 +210,7 @@ export default function MyReservations() {
 
   return (
     <div>
-      <div className="header-banner"><img src={logo} alt="logo" /><h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1></div>
-      <div className="nav-tabs">
-        <button onClick={() => navigate('/home')}>HOME</button>
-        <button onClick={() => navigate('/dashboard')}>DASHBOARD</button>
-        <button onClick={() => navigate('/parking-map')}>PARKING MAP</button>
-        <button onClick={() => navigate('/notifications')}>NOTIFICATIONS</button>
-        <button onClick={() => navigate('/settings')}>SETTINGS</button>
-      </div>
+      <Navbar />
 
       <div className="action-row">
         <button onClick={() => navigate('/parking-map')}><MapPin size={18} /> Reserve Spot</button>
@@ -227,7 +222,7 @@ export default function MyReservations() {
         <h2 style={{ marginBottom: '12px' }}>🔍 Search & Filter</h2>
         <div style={{ position: 'relative', marginBottom: '12px' }}>
           <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#ccc' }} />
-          <input type="text" placeholder="Search by area, vehicle, date, status…" value={search}
+          <input type="text" placeholder="Search" value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={{ width: '100%', padding: '9px 12px 9px 34px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '14px' }} />
         </div>

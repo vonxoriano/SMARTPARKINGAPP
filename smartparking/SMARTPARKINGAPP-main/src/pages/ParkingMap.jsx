@@ -1,28 +1,53 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Car, Bike } from 'lucide-react';
-import logo from '../assets/logo.png';
-import { ParkingAPI } from '../api';
+import { ParkingAPI, ReservationAPI } from '../api';
+import Navbar from '../components/Navbar';
 
 export default function ParkingMap() {
   const navigate = useNavigate();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [parkingAreas, setParkingAreas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSpot, setSelectedSpot] = useState(null); // { areaId, spotId }
+  const [selectedSpot, setSelectedSpot] = useState(null);
+
+  const loadAreas = async () => {
+    try {
+      const areas = await ParkingAPI.getAllAreas();
+      setParkingAreas(areas);
+    } catch (err) {
+      console.error('Failed to load parking areas:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkAndExpireReservations = async () => {
+    try {
+      const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+      if (!currentUser.id) return;
+      const reservations = await ReservationAPI.getByUser(currentUser.id, 'RESERVED');
+      const now = Date.now();
+      for (const r of reservations) {
+        if (!r.reservedAt) continue;
+        const duration = Number(sessionStorage.getItem('reservationDuration') || 3600000);
+        const expiry = new Date(r.reservedAt).getTime() + duration;
+        if (now > expiry) {
+          await ReservationAPI.expire(r.id);
+        }
+      }
+    } catch (err) {
+      console.error('Expire check failed:', err);
+    }
+  };
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const areas = await ParkingAPI.getAllAreas();
-        setParkingAreas(areas);
-      } catch (err) {
-        console.error('Failed to load parking areas:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+    loadAreas();
+    const interval = setInterval(async () => {
+      await checkAndExpireReservations();
+      await loadAreas();
+    }, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleSpotClick = (areaId, spot) => {
@@ -35,15 +60,8 @@ export default function ParkingMap() {
   };
 
   const handleReserve = (area) => {
-    if (!selectedVehicle) {
-      alert('Please choose a vehicle type first!');
-      return;
-    }
-    if (!selectedSpot || selectedSpot.areaId !== area.id) {
-      alert('Please click on an available (green) spot in this area first!');
-      return;
-    }
-
+    if (!selectedVehicle) { alert('Please choose a vehicle type first!'); return; }
+    if (!selectedSpot || selectedSpot.areaId !== area.id) { alert('Please click on an available (green) spot in this area first!'); return; }
     sessionStorage.setItem('selectedVehicle', selectedVehicle);
     sessionStorage.setItem('selectedArea', area.name);
     sessionStorage.setItem('selectedSpotId', String(selectedSpot.spotId));
@@ -53,10 +71,7 @@ export default function ParkingMap() {
   if (loading) {
     return (
       <div>
-        <div className="header-banner">
-          <img src={logo} alt="logo" />
-          <h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1>
-        </div>
+        <Navbar />
         <div className="glass-card"><p style={{ color: '#ccc' }}>Loading parking map…</p></div>
       </div>
     );
@@ -64,26 +79,16 @@ export default function ParkingMap() {
 
   return (
     <div>
-      <div className="header-banner">
-        <img src={logo} alt="logo" />
-        <h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1>
-      </div>
-
-      <div className="nav-tabs">
-        <button onClick={() => navigate('/home')}>HOME</button>
-        <button onClick={() => navigate('/dashboard')}>DASHBOARD</button>
-        <button className="active">PARKING MAP</button>
-        <button onClick={() => navigate('/notifications')}>NOTIFICATIONS</button>
-        <button onClick={() => navigate('/settings')}>SETTINGS</button>
-      </div>
+      <Navbar />
 
       {/* LEGEND */}
       <div className="glass-card">
         <h2>Legend</h2>
         <div className="spot-row">
-          <span className="green">● Vacant — click to select</span>
-          <span className="red">● Reserved</span>
-          <span style={{ color: '#ffe066' }}>● Selected</span>
+          <span style={{ color: 'lightgreen' }}>● Vacant</span>
+          <span style={{ color: '#f0c040' }}>● Reserved</span>
+          <span style={{ color: '#ff6b6b' }}>● Occupied</span>
+          <span style={{ color: '#76ff03' }}>● Selected</span>
         </div>
       </div>
 
@@ -133,15 +138,9 @@ export default function ParkingMap() {
         const hasSelectionHere = selectedSpot?.areaId === area.id;
 
         return (
-          <div
-            key={area.id}
-            className="glass-card"
-            style={{
-              border: hasSelectionHere ? '2px solid #ffe066' : '2px solid transparent',
-              transition: 'border 0.2s',
-            }}
+          <div key={area.id} className="glass-card"
+            style={{ border: hasSelectionHere ? '2px solid #ffe066' : '2px solid transparent', transition: 'border 0.2s' }}
           >
-            {/* Header + Reserve Button */}
             <div className="area-header">
               <span style={{ fontWeight: 'bold', fontSize: '16px' }}>{area.name}</span>
               <button
@@ -168,10 +167,12 @@ export default function ParkingMap() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: '6px', marginTop: '10px' }}>
               {area.spots.map((spot) => {
                 const isHighlighted = selectedSpot?.areaId === area.id && selectedSpot?.spotId === spot.id;
-                let bgColor = 'red';
-                if (spot.status === 'vacant') {
-                  bgColor = isHighlighted ? '#76ff03' : 'green';
-                }
+                let bgColor;
+                if (isHighlighted)             bgColor = '#76ff03';
+                else if (spot.status === 'vacant')   bgColor = '#2d8b2d';
+                else if (spot.status === 'reserved') bgColor = '#f0c040';
+                else                                 bgColor = '#cc3333';
+
                 return (
                   <div
                     key={spot.id}
@@ -196,8 +197,9 @@ export default function ParkingMap() {
 
             {/* STATS + PROGRESS BAR */}
             <div className="spot-row" style={{ marginTop: 10 }}>
-              <span className="green">Vacant: {vacantCount}</span>
-              <span style={{ color: '#ff6b6b' }}>Reserved: {area.spots.filter(s => s.status === 'reserved').length}</span>
+              <span style={{ color: 'lightgreen' }}>Vacant: {area.spots.filter(s => s.status === 'vacant').length}</span>
+              <span style={{ color: '#f0c040' }}>Reserved: {area.spots.filter(s => s.status === 'reserved').length}</span>
+              <span style={{ color: '#cc3333' }}>Occupied: {area.spots.filter(s => s.status === 'taken').length}</span>
             </div>
 
             <div className="progress-wrap" style={{ marginTop: '8px' }}>

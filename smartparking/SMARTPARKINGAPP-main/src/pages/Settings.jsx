@@ -1,18 +1,16 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
-import logo from '../assets/logo.png';
 import { addNotification } from '../notificationUtils';
 import { AuthAPI } from '../api';
+import Navbar from '../components/Navbar';
 
 export default function Settings() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  // Load logged-in user from sessionStorage (set at login)
   const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
 
-  // Load persisted photo from localStorage
   const [photo, setPhoto] = useState(
     () => localStorage.getItem('profilePhoto') || null
   );
@@ -32,38 +30,24 @@ export default function Settings() {
 
   const handleSavePassword = async () => {
     setPwStatus({ msg: '', ok: false });
-
     if (!passwords.currentPassword || !passwords.newPassword || !passwords.confirmPassword) {
-      setPwStatus({ msg: 'Please fill in all password fields.', ok: false });
-      return;
+      setPwStatus({ msg: 'Please fill in all password fields.', ok: false }); return;
     }
     if (passwords.newPassword !== passwords.confirmPassword) {
-      setPwStatus({ msg: 'New passwords do not match!', ok: false });
-      return;
+      setPwStatus({ msg: 'New passwords do not match!', ok: false }); return;
     }
     if (passwords.newPassword.length < 4) {
-      setPwStatus({ msg: 'Password must be at least 4 characters.', ok: false });
-      return;
+      setPwStatus({ msg: 'Password must be at least 4 characters.', ok: false }); return;
     }
     if (!currentUser.studentId) {
-      setPwStatus({ msg: 'Not logged in. Please log in again.', ok: false });
-      return;
+      setPwStatus({ msg: 'Not logged in. Please log in again.', ok: false }); return;
     }
-
     setPwLoading(true);
     try {
-      await AuthAPI.changePassword(
-        currentUser.studentId,
-        passwords.currentPassword,
-        passwords.newPassword
-      );
+      await AuthAPI.changePassword(currentUser.studentId, passwords.currentPassword, passwords.newPassword);
       setPwStatus({ msg: 'Password changed successfully!', ok: true });
       setPasswords({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      addNotification({
-        type: 'profile_updated',
-        title: 'Password Changed',
-        message: 'Your account password has been updated successfully.',
-      });
+      addNotification({ type: 'profile_updated', title: 'Password Changed', message: 'Your account password has been updated successfully.' });
     } catch (err) {
       setPwStatus({ msg: err.message || 'Failed to change password.', ok: false });
     } finally {
@@ -103,26 +87,13 @@ export default function Settings() {
 
   return (
     <div>
-      <div className="header-banner">
-        <img src={logo} alt="logo" />
-        <h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1>
-      </div>
-
-      <div className="nav-tabs">
-        <button onClick={() => navigate('/home')}>HOME</button>
-        <button onClick={() => navigate('/dashboard')}>DASHBOARD</button>
-        <button onClick={() => navigate('/parking-map')}>PARKING MAP</button>
-        <button onClick={() => navigate('/notifications')}>NOTIFICATIONS</button>
-        <button className="active">SETTINGS</button>
-      </div>
+      <Navbar />
 
       {/* PROFILE CARD */}
       <div className="glass-card">
         <h2>Profile Info</h2>
-
         <div className="area-card" style={{ textAlign: 'center', padding: '20px 16px' }}>
           <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
-
           <div style={{
             width: 100, height: 100, borderRadius: '50%', overflow: 'hidden',
             margin: '0 auto 12px', background: 'rgba(255,255,255,0.15)',
@@ -135,7 +106,6 @@ export default function Settings() {
               : <User size={48} color="rgba(255,255,255,0.7)" />
             }
           </div>
-
           <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <button onClick={() => fileInputRef.current.click()}
               style={{ background: '#8b4a4a', border: 'none', color: 'white', padding: '7px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}>
@@ -148,10 +118,8 @@ export default function Settings() {
               </button>
             )}
           </div>
-          {photo && <p style={{ marginTop: '8px', fontSize: '11px', color: '#aaa' }}>Photo saved — will persist after refresh.</p>}
         </div>
 
-        {/* Profile fields — pulled from real session */}
         {fields.map((f) => (
           <div key={f.key} className="area-card">
             <div className="area-header"><span>{f.label}</span></div>
@@ -165,7 +133,7 @@ export default function Settings() {
         ))}
       </div>
 
-      {/* CHANGE PASSWORD — calls real backend */}
+      {/* CHANGE PASSWORD */}
       <div className="glass-card">
         <h2>Change Password</h2>
         {[
@@ -185,19 +153,14 @@ export default function Settings() {
             />
           </div>
         ))}
-
         {pwStatus.msg && (
           <p style={{ color: pwStatus.ok ? 'lightgreen' : '#ff6b6b', fontSize: '13px', margin: '10px 0 0' }}>
             {pwStatus.ok ? '✅' : '⚠'} {pwStatus.msg}
           </p>
         )}
-
         <div style={{ marginTop: '14px', textAlign: 'right' }}>
-          <button
-            onClick={handleSavePassword}
-            disabled={pwLoading}
-            style={{ background: pwLoading ? '#555' : '#4a8b4a', border: 'none', color: 'white', padding: '9px 22px', borderRadius: '8px', cursor: pwLoading ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '14px' }}
-          >
+          <button onClick={handleSavePassword} disabled={pwLoading}
+            style={{ background: pwLoading ? '#555' : '#4a8b4a', border: 'none', color: 'white', padding: '9px 22px', borderRadius: '8px', cursor: pwLoading ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '14px' }}>
             {pwLoading ? '⏳ Saving…' : '💾 Change Password'}
           </button>
         </div>

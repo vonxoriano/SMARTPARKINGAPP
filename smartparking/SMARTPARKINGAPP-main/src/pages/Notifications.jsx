@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Bell, Clock, Car, Bike, MapPin, CheckCheck, Trash2, X } from 'lucide-react';
-import logo from '../assets/logo.png';
+import { Bell, Clock, CheckCheck, Trash2, X } from 'lucide-react';
 import {
   getNotifications, addNotification, markAllRead, markOneRead,
-  deleteNotif, clearAll, seedInitialNotifications,
+  deleteNotif, clearAll,
 } from '../notificationUtils';
+import AnnouncementsCard from '../components/AnnouncementsCard';
+import Navbar from '../components/Navbar';
 
 const timeAgo = (iso) => {
   const diff = Date.now() - new Date(iso).getTime();
@@ -57,12 +57,10 @@ const checkExpiring = () => {
 };
 
 export default function Notifications() {
-  const navigate = useNavigate();
   const [notifs, setNotifs] = useState([]);
   const [filter, setFilter] = useState('all');
 
   const reload = () => {
-    seedInitialNotifications();
     checkExpiring();
     setNotifs(getNotifications());
   };
@@ -81,11 +79,6 @@ export default function Notifications() {
   });
 
   const unreadCount = notifs.filter(n => !n.read).length;
-
-  const reservations = JSON.parse(sessionStorage.getItem('reservations') || '[]');
-  const carCount  = reservations.filter(r => r.vehicle === 'CAR').length;
-  const motoCount = reservations.filter(r => r.vehicle === 'MOTORCYCLE').length;
-  const areaCount = [...new Set(reservations.map(r => r.area).filter(Boolean))].length;
 
   const handleMarkAll  = () => { markAllRead(); reload(); };
   const handleMarkOne  = (id) => { markOneRead(id); reload(); };
@@ -107,24 +100,9 @@ export default function Notifications() {
 
   return (
     <div>
-      {/* HEADER */}
-      <div className="header-banner">
-        <img src={logo} alt="logo" />
-        <h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1>
-      </div>
+      <Navbar />
 
-      {/* NAV */}
-      <div className="nav-tabs">
-        <button onClick={() => navigate('/home')}>HOME</button>
-        <button onClick={() => navigate('/dashboard')}>DASHBOARD</button>
-        <button onClick={() => navigate('/parking-map')}>PARKING MAP</button>
-        <button className="active">NOTIFICATIONS</button>
-        <button onClick={() => navigate('/settings')}>SETTINGS</button>
-      </div>
-
-      {/* NOTIFICATIONS CARD */}
       <div className="glass-card">
-        {/* Header */}
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:'8px' }}>
           <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
             <h2 style={{ margin:0 }}>
@@ -147,7 +125,6 @@ export default function Notifications() {
           </div>
         </div>
 
-        {/* Filter tabs */}
         <div style={{ display:'flex', gap:'8px', marginTop:'14px', flexWrap:'wrap' }}>
           {tabBtn('all','All')}
           {tabBtn('unread','Unread')}
@@ -155,7 +132,6 @@ export default function Notifications() {
           {tabBtn('system','System & Profile')}
         </div>
 
-        {/* List */}
         <div style={{ marginTop:'12px' }}>
           {filtered.length === 0 ? (
             <div style={{ textAlign:'center', padding:'30px 0', color:'#aaa' }}>
@@ -207,6 +183,7 @@ export default function Notifications() {
         </div>
       </div>
 
+      <AnnouncementsCard />
     </div>
   );
 }

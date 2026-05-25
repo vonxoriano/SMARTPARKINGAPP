@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
-import logo from '../assets/logo.png';
 import { ParkingAPI } from '../api';
+import AnnouncementsCard from '../components/AnnouncementsCard';
+import Navbar from '../components/Navbar';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -25,17 +26,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="header-banner">
-        <img src={logo} alt="logo" />
-        <h1>CEBU INSTITUTE OF TECHNOLOGY UNIVERSITY</h1>
-      </div>
-      <div className="nav-tabs">
-        <button onClick={() => navigate('/home')}>HOME</button>
-        <button className="active">DASHBOARD</button>
-        <button onClick={() => navigate('/parking-map')}>PARKING MAP</button>
-        <button onClick={() => navigate('/notifications')}>NOTIFICATIONS</button>
-        <button onClick={() => navigate('/settings')}>SETTINGS</button>
-      </div>
+      <Navbar />
 
       <div className="glass-card">
         <h2>PARKING OVERVIEW</h2>
@@ -56,7 +47,6 @@ export default function Dashboard() {
                   </span>
                 </div>
 
-                {/* Available & Occupied counts */}
                 <div className="spot-row" style={{ marginTop: '6px' }}>
                   <span style={{ color: '#76ff03', fontWeight: 'bold' }}>
                     🟢 Available: {area.vacantSpots}/{area.totalSpots}
@@ -66,7 +56,6 @@ export default function Dashboard() {
                   </span>
                 </div>
 
-                {/* Progress bar grows as spots are occupied */}
                 <div className="progress-wrap" style={{ marginTop: '8px' }}>
                   <div
                     className="progress-bar"
@@ -91,10 +80,7 @@ export default function Dashboard() {
         </button>
       </div>
 
-      <div className="glass-card announcement">
-        <h2>Announcements</h2>
-        <p>--</p>
-      </div>
+      <AnnouncementsCard />
     </div>
   );
 }
