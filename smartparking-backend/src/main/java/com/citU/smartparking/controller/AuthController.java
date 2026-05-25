@@ -96,7 +96,8 @@ public class AuthController {
             "id",        u.getId(),
             "name",      u.getName(),
             "studentId", u.getStudentId(),
-            "email",     u.getEmail()
+            "email",     u.getEmail(),
+            "role",      u.getRole() != null ? u.getRole() : "USER"
         );
     }
 }

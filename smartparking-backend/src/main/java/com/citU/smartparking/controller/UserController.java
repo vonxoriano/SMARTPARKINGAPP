@@ -62,6 +62,10 @@ public class UserController {
         return ResponseEntity.ok(Map.of("message", "User deleted successfully"));
     }
 
+    @GetMapping
+public ResponseEntity<?> getAllUsers() {
+    return ResponseEntity.ok(userService.getAllUsers().stream().map(this::safeUser).toList());
+}
     // ── Helper ───────────────────────────────────────────────────────────────
     private Map<String, Object> safeUser(User u) {
         return Map.of(

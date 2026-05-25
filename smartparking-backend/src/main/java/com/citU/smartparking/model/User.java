@@ -32,6 +32,12 @@ public class User {
     @Column(nullable = false)
     private String password;        // stored as plain text for demo; BCrypt in production
 
+    @Column(nullable = false)
+    private String role = "USER";   // "USER" or "ADMIN"
+
+    public String getRole()              { return role; }
+    public void setRole(String role)     { this.role = role; }
+
     @Column(name = "profile_photo_url")
     private String profilePhotoUrl;
 

@@ -24,6 +24,15 @@ public class DataSeeder implements CommandLineRunner {
             System.out.println("✅ Seeded default test user: 23-3724-353 / test1234");
         }
 
+        // ── Admin user ───────────────────────────────────────────────────────
+        if (!userRepo.existsByStudentId("admin")) {
+            User admin = new User("Admin", "admin",
+                                  "admin@cit-u.edu.ph", "admin1234");
+            admin.setRole("ADMIN");
+            userRepo.save(admin);
+            System.out.println("✅ Seeded admin user: admin / admin1234");
+        }
+
         // ── RTL AREA — all 20 spots VACANT ───────────────────────────────────
         if (areaRepo.findByName("RTL AREA").isEmpty()) {
             ParkingArea rtl = areaRepo.save(new ParkingArea("RTL AREA"));

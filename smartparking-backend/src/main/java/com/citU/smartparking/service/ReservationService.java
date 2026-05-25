@@ -26,8 +26,8 @@ public class ReservationService {
 
     @Transactional
     public Reservation createReservation(Long userId, Long spotId,
-                                         String vehicleStr, LocalDate date,
-                                         LocalTime time, int durationHours) {
+                                     String vehicleStr, LocalDate date,
+                                     LocalTime time, int durationHours, Long durationMs) {
 
         User user = userService.getUserById(userId);
         ParkingSpot spot = parkingService.getSpotById(spotId);
@@ -57,6 +57,7 @@ public class ReservationService {
         res.setDate(date);
         res.setTime(time);
         res.setDurationHours(durationHours);
+        res.setDurationMs(durationMs);
         res.setStatus(Status.RESERVED);
         res.setReservedAt(LocalDateTime.now());
 
@@ -75,7 +76,8 @@ public class ReservationService {
         }
 
         // Check it hasn't already expired (1 hour window)
-        LocalDateTime expiry = res.getReservedAt().plusHours(1);
+        long durationMs = res.getDurationMs() != null ? res.getDurationMs() : 3600000L;
+        LocalDateTime expiry = res.getReservedAt().plus(durationMs, java.time.temporal.ChronoUnit.MILLIS);
         if (LocalDateTime.now().isAfter(expiry)) {
             // Auto-expire it instead
             return expireReservation(reservationId);

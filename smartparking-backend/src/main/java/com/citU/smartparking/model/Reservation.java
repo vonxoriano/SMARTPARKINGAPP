@@ -49,6 +49,11 @@ public class Reservation {
     // Timestamp when reservation was created — used to calculate 1-hr expiry
     @Column(name = "reserved_at")
     private LocalDateTime reservedAt = LocalDateTime.now();
+    @Column(name = "duration_ms")
+private Long durationMs = 3600000L;
+
+public Long getDurationMs()          { return durationMs; }
+public void setDurationMs(Long ms)   { this.durationMs = ms; }
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();

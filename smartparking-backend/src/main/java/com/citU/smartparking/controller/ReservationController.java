@@ -28,9 +28,10 @@ public class ReservationController {
             LocalDate date         = LocalDate.parse(body.get("date").toString());
             LocalTime time         = LocalTime.parse(body.get("time").toString());
             int       durationHours = Integer.parseInt(body.get("durationHours").toString());
+            Long durationMs = body.containsKey("durationMs") ? Long.valueOf(body.get("durationMs").toString()) : 3600000L;
 
             Reservation res = reservationService.createReservation(
-                    userId, spotId, vehicle, date, time, durationHours);
+        userId, spotId, vehicle, date, time, durationHours, durationMs);
             return ResponseEntity.status(HttpStatus.CREATED).body(resMap(res));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -105,7 +106,7 @@ public class ReservationController {
     public ResponseEntity<?> completeReservation(@PathVariable Long id) {
         return ResponseEntity.ok(resMap(reservationService.completeReservation(id)));
     }
-
+    //must be in homepage and must not be available to view
     // DELETE /api/reservations/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteReservation(@PathVariable Long id) {
@@ -126,6 +127,7 @@ public class ReservationController {
         map.put("date",          r.getDate().toString());
         map.put("time",          r.getTime().toString());
         map.put("durationHours", r.getDurationHours());
+        map.put("durationMs", r.getDurationMs());
         map.put("status",        r.getStatus().name());
         map.put("reservedAt",    r.getReservedAt().toString());  // frontend uses this for countdown
         map.put("createdAt",     r.getCreatedAt().toString());
